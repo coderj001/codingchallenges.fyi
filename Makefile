@@ -7,7 +7,7 @@ BIN_DIR = bin
 
 SRCS = $(wildcard $(SRC_DIR)/*.cpp)
 OBJS = $(SRCS:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
-TARGET = $(BIN_DIR)/wc
+TARGET = $(BIN_DIR)/ccwc
 
 $(TARGET): $(OBJS)
 	@mkdir -p $(BIN_DIR)
