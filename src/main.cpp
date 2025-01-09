@@ -1,12 +1,14 @@
 #include <iostream>
 
+using namespace std;
+
 int main(int argc, char *argv[]) {
   if (argc < 2) {
-    std::cerr << "Error: No command provided." << std::endl;
+    cerr << "Error: No command provided." << endl;
     return 1;
   }
 
-  std::string command = argv[1];
-  std::cout << command;
+  string command = argv[1];
+  cout << command;
   return 0;
 }
