@@ -14,14 +14,44 @@ void bytesInFile(const string &filename) {
   int num_of_bytes = 0;
 
   while (getline(infile, s)) {
+    num_of_bytes += s.length() + 1; // for `\n`
+  }
+
+  cout << num_of_bytes << " " << filename << endl;
+}
+
+void linesInFile(const string &filename) {
+  ifstream infile(filename);
+  if (!infile.is_open()) {
+    cerr << "Error: Opening the file." << endl;
+  }
+
+  string s;
+  int num_of_lines = 0;
+
+  while (getline(infile, s)) {
+    num_of_lines += 1;
+  }
+
+  cout << num_of_lines << " " << filename << endl;
+}
+
+void wordsInFile(const string &filename) {
+  ifstream infile(filename);
+  if (!infile.is_open()) {
+    cerr << "Error: Opening the file." << endl;
+  }
+
+  string s;
+  int num_of_words = 0;
+
+  while (getline(infile, s)) {
     for (char byte : s) {
-      if (byte == '\n') {
-        num_of_bytes += 2;
-      } else {
-        num_of_bytes += 1;
+      if (byte == 32) {
+        num_of_words += 1;
       }
     }
   }
 
-  cout << num_of_bytes << " " << filename << endl;
+  cout << num_of_words << " " << filename << endl;
 }

@@ -16,14 +16,13 @@ int main(int argc, char *argv[]) {
 
   if (command == "-c") {
     filename = argv[2];
-    // cout << "Output number of bytes in the file. " << filename;
     bytesInFile(filename);
   } else if (command == "-l") {
     filename = argv[2];
-    cout << "Output number of lines in the file. " << filename;
+    linesInFile(filename);
   } else if (command == "-w") {
     filename = argv[2];
-    cout << "Output number of words in the file. " << filename;
+    wordsInFile(filename);
   } else if (command == "-m") {
     filename = argv[2];
     cout << "Output number of characters in the file. " << filename;
