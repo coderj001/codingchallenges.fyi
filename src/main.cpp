@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 
-#include "wc.cpp"
+#include "../include/wc.h"
 
 using namespace std;
 
@@ -16,7 +16,8 @@ int main(int argc, char *argv[]) {
 
   if (command == "-c") {
     filename = argv[2];
-    cout << "Output number of bytes in the file. " << filename;
+    // cout << "Output number of bytes in the file. " << filename;
+    bytesInFile(filename);
   } else if (command == "-l") {
     filename = argv[2];
     cout << "Output number of lines in the file. " << filename;
