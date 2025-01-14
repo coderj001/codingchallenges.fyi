@@ -16,19 +16,23 @@ int main(int argc, char *argv[]) {
 
   if (command == "-c") {
     filename = argv[2];
-    bytesInFile(filename);
+    cout << bytesInFile(filename) << " " << filename;
   } else if (command == "-l") {
     filename = argv[2];
-    linesInFile(filename);
+    cout << linesInFile(filename) << " " << filename;
   } else if (command == "-w") {
     filename = argv[2];
-    wordsInFile(filename);
+    cout << wordsInFile(filename) << " " << filename;
   } else if (command == "-m") {
     filename = argv[2];
-    charactersInFile(filename);
+    cout << charactersInFile(filename) << " " << filename;
   } else {
-    cout << "Output number of characters in the file. " << command;
+    filename = argv[1];
+    cout << "  " << linesInFile(filename) << " " << wordsInFile(filename) << " "
+         << bytesInFile(filename) << " " << filename;
   }
+
+  cout << endl;
 
   return 0;
 }

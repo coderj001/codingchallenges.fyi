@@ -5,9 +5,9 @@
 using namespace std;
 
 // Function: No's of bytes in a file
-void bytesInFile(const string& filename);
-void linesInFile(const string& filename);
-void wordsInFile(const string& filename);
-void charactersInFile(const string& filename);
+int bytesInFile(const string& filename);
+int linesInFile(const string& filename);
+int wordsInFile(const string& filename);
+int charactersInFile(const string& filename);
 
 #endif // !WC_H

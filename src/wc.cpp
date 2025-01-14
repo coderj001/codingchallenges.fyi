@@ -5,10 +5,11 @@
 
 using namespace std;
 
-void bytesInFile(const string &filename) {
+int bytesInFile(const string &filename) {
   ifstream infile(filename);
   if (!infile.is_open()) {
     cerr << "Error: Opening the file." << endl;
+    return 1;
   }
 
   string s;
@@ -19,13 +20,14 @@ void bytesInFile(const string &filename) {
   }
   infile.close();
 
-  cout << num_of_bytes << " " << filename << endl;
+  return num_of_bytes;
 }
 
-void linesInFile(const string &filename) {
+int linesInFile(const string &filename) {
   ifstream infile(filename);
   if (!infile.is_open()) {
     cerr << "Error: Opening the file." << endl;
+    return 1;
   }
 
   string s;
@@ -36,37 +38,35 @@ void linesInFile(const string &filename) {
   }
   infile.close();
 
-  cout << num_of_lines << " " << filename << endl;
+  return num_of_lines;
 }
 
-void wordsInFile(const string &filename) {
-  ifstream infile(filename);
+int wordsInFile(const string &filename) {
+  wifstream infile(filename);
+  infile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
   if (!infile.is_open()) {
     cerr << "Error: Opening the file." << endl;
+    return -1;
   }
 
-  string s;
+  wstring word;
   int num_of_words = 0;
 
-  while (getline(infile, s)) {
-    for (char c : s) {
-      if (c == ' ' || c == '\n') {
-        num_of_words++;
-      }
-    }
+  while (infile >> word) {
+    num_of_words++;
   }
   infile.close();
 
-  cout << num_of_words << " " << filename << endl;
+  return num_of_words;
 }
 
-void charactersInFile(const string &filename) {
+int charactersInFile(const string &filename) {
   wifstream infile(filename);
   infile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
 
   if (!infile.is_open()) {
     cerr << "Error: Unable to open the file." << endl;
-    return;
+    return 1;
   }
 
   wchar_t ch;
@@ -78,6 +78,5 @@ void charactersInFile(const string &filename) {
 
   infile.close();
 
-  cout << num_of_characters << " " << filename << endl;
+  return num_of_characters;
 }
-
