@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     wordsInFile(filename);
   } else if (command == "-m") {
     filename = argv[2];
-    cout << "Output number of characters in the file. " << filename;
+    charactersInFile(filename);
   } else {
     cout << "Output number of characters in the file. " << command;
   }

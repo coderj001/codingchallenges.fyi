@@ -8,5 +8,6 @@ using namespace std;
 void bytesInFile(const string& filename);
 void linesInFile(const string& filename);
 void wordsInFile(const string& filename);
+void charactersInFile(const string& filename);
 
 #endif // !WC_H
