@@ -46,9 +46,9 @@ void wordsInFile(const string &filename) {
   int num_of_words = 0;
 
   while (getline(infile, s)) {
-    for (char byte : s) {
-      if (byte == 32) {
-        num_of_words += 1;
+    for (char c : s) {
+      if (c == ' ' || c == '\n') {
+        num_of_words++;
       }
     }
   }
