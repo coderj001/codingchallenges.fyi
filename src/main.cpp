@@ -11,28 +11,30 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  string command = argv[1];
   string filename;
-
-  if (command == "-c") {
-    filename = argv[2];
-    cout << bytesInFile(filename) << " " << filename;
-  } else if (command == "-l") {
-    filename = argv[2];
-    cout << linesInFile(filename) << " " << filename;
-  } else if (command == "-w") {
-    filename = argv[2];
-    cout << wordsInFile(filename) << " " << filename;
-  } else if (command == "-m") {
-    filename = argv[2];
-    cout << charactersInFile(filename) << " " << filename;
-  } else {
+  if (argc == 2) {
     filename = argv[1];
     cout << "  " << linesInFile(filename) << " " << wordsInFile(filename) << " "
-         << bytesInFile(filename) << " " << filename;
+         << bytesInFile(filename) << " " << filename << endl;
+    return 0;
   }
 
-  cout << endl;
+  int i = 1;
+  filename = argv[argc - 1];
+  while (i < argc - 1) {
+    string command = argv[i];
+    if (command == "-c") {
+      cout << bytesInFile(filename) << " ";
+    } else if (command == "-l") {
+      cout << linesInFile(filename) << " ";
+    } else if (command == "-w") {
+      cout << wordsInFile(filename) << " ";
+    } else if (command == "-m") {
+      cout << charactersInFile(filename) << " ";
+    }
+    i++;
+  }
+  cout << filename << endl;
 
   return 0;
 }

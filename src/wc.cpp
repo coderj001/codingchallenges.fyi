@@ -16,7 +16,7 @@ int bytesInFile(const string &filename) {
   int num_of_bytes = 0;
 
   while (getline(infile, s)) {
-    num_of_bytes += s.length() + 1; // for `\n`
+    num_of_bytes += s.length() + 1;
   }
   infile.close();
 
@@ -24,13 +24,14 @@ int bytesInFile(const string &filename) {
 }
 
 int linesInFile(const string &filename) {
-  ifstream infile(filename);
+  wifstream infile(filename);
+  infile.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
   if (!infile.is_open()) {
     cerr << "Error: Opening the file." << endl;
     return 1;
   }
 
-  string s;
+  wstring s;
   int num_of_lines = 0;
 
   while (getline(infile, s)) {
