@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 #include <cctype>
 #include <cstddef>
+#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -8,35 +9,27 @@
 using namespace std;
 
 enum TokenType {
-  LEFT_BRACE = '{',
-  RIGHT_BRACE = '}',
-  LEFT_BRACKET = '(',
-  RIGHT_BRACKET = ')',
-  LEFT_SQUARE_BRACKET = '[',
-  RIGHT_SQUARE_BRACKET = ']',
-  COMMA = ',',
+  OBJECT_BEGIN = '{',
+  OBJECT_END = '}',
+  ARRAY_BEGIN = '[',
+  ARRAY_END = ']',
   COLON = ':',
-  SEMICOLON = ';',
-  DOUBLE_QUOTE = '"',
-  BOOLEAN,
-  NUMBER,
+  COMMA = ',',
+  NULL_VAL,
   STRING,
-  NULL_VALUE
+  NUMBER,
+  FALSE,
+  TRUE,
 };
 
 struct Token {
   TokenType type;
   string value;
-  size_t line;
-  size_t colunm;
 
-  Token(TokenType t, const string &v, size_t l = 0, size_t c = 0)
-      : type(t), value(v), line(l), colunm(c) {}
+  Token(TokenType t, const string &v) : type(t), value(v) {}
 
-  string getValue() {
+  string getString() {
     stringstream ss;
-    ss << "L" << line << " ";
-    ss << "C" << colunm << " ";
     ss << "T(" << type << ") ";
     ss << "V: " << value << " ";
     return ss.str();
@@ -46,68 +39,73 @@ struct Token {
 vector<Token> tokenize(const string &input) {
   vector<Token> tokens;
   size_t pos = 0;
-  size_t line = 1;
-  size_t col = 1;
 
   while (pos < input.length()) {
     char c = input[pos];
 
     switch (c) {
     case '{':
-      tokens.emplace_back(TokenType::LEFT_BRACE, "{", line, col);
+      tokens.emplace_back(TokenType::OBJECT_BEGIN, "{");
       break;
     case '}':
-      tokens.emplace_back(TokenType::RIGHT_BRACE, "}", line, col);
+      tokens.emplace_back(TokenType::OBJECT_END, "}");
       break;
-    case ':':
-      tokens.emplace_back(TokenType::COLON, ":", line, col);
+    case '[':
+      tokens.emplace_back(TokenType::ARRAY_BEGIN, "[");
+      break;
+    case ']':
+      tokens.emplace_back(TokenType::ARRAY_END, "]");
       break;
     case ',':
-      tokens.emplace_back(TokenType::COMMA, ",", line, col);
+      tokens.emplace_back(TokenType::COMMA, ",");
+      break;
+    case ':':
+      tokens.emplace_back(TokenType::COLON, ":");
       break;
     case '"': {
       string str;
       pos++;
-      col++;
       while (pos < input.length() && input[pos] != '"') {
         str += input[pos];
         pos++;
-        col++;
       }
-      tokens.emplace_back(TokenType::STRING, str, line, col);
+      tokens.emplace_back(TokenType::STRING, str);
       break;
     }
     case ' ':
     case '\t':
-      col++;
       break;
     case '\n':
-      line++;
-      col = 1;
       break;
-    default:
-      if (isalpha(c)) {
-        string value;
-        while (pos < input.length() && std::isalnum(input[pos])) {
-          value += input[pos];
-          pos++;
-          col++;
-        }
-        pos--;
-        tokens.emplace_back(TokenType::STRING, value, line, col);
-      }
     };
+
     pos++;
-    col++;
   }
   return tokens;
 }
 
 int main(int argc, char *argv[]) {
-  string input = "{\"key\":\"value\",}";
-  auto tokens = tokenize(input);
-  for (auto token : tokens) {
-    cout << token.getValue() << endl;
+  if (argc < 2) {
+    cerr << "Error: No command provided." << endl;
+    return 1;
   }
+
+  string filename = argv[argc - 1];
+  ifstream infile(filename);
+
+  if (!infile.is_open()) {
+    cerr << "Error: Opening the file." << endl;
+    return 1;
+  }
+
+  string s;
+
+  while (getline(infile, s)) {
+    auto tokens = tokenize(s);
+    for (auto token : tokens) {
+      cout << token.getString() << endl;
+    }
+  }
+
   return 0;
 }
