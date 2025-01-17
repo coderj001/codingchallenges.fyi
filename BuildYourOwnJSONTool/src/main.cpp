@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 using namespace std;
@@ -134,6 +135,11 @@ public:
   explicit JSONParser(const string &jsonstring)
       : tokens(tokenize(jsonstring)), pos(0) {};
 
+  JSONValue parser() {
+    skipWhitespace();
+    return {};
+  }
+
 private:
   vector<Token> tokens;
   size_t pos;
@@ -141,34 +147,30 @@ private:
   void skipWhitespace() {
     while (pos < tokens.size() &&
            (tokens[pos].type == NULL_VAL ||
-            tokens[pos].type == STRING && tokens[pos].value.empty())) {
+            (tokens[pos].type == STRING && tokens[pos].value.empty()))) {
       pos++;
     }
   }
 };
+
+string getFileContents(const string &filename) {
+  ifstream file(filename);
+  if (!file.is_open()) {
+    throw runtime_error("Unable to open file.");
+  }
+  ostringstream oss;
+  oss << file.rdbuf();
+  return oss.str();
+}
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
     cerr << "Error: No command provided." << endl;
     return 1;
   }
-
   string filename = argv[argc - 1];
-  ifstream infile(filename);
 
-  if (!infile.is_open()) {
-    cerr << "Error: Opening the file." << endl;
-    return 1;
-  }
-
-  string s;
-
-  while (getline(infile, s)) {
-    auto tokens = tokenize(s);
-    for (auto token : tokens) {
-      cout << token.getString() << endl;
-    }
-  }
-
+  auto parser = JSONParser(getFileContents(filename));
+  parser.parser();
   return 0;
 }
