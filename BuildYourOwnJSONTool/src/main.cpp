@@ -3,10 +3,56 @@
 #include <cstddef>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 
 using namespace std;
+
+// datatype
+
+class JSONValue {
+public:
+  virtual ~JSONValue() = default;
+};
+
+class JSONNull : public JSONValue {
+public:
+  void print() const { cout << "null"; }
+};
+
+class JSONString : public JSONValue {
+public:
+  string value;
+  void print() const { cout << "\"" << value << "\""; }
+};
+
+class JSONNumber : public JSONValue {
+public:
+  double value;
+  void print() const { cout << value; }
+};
+
+class JSONBoolean : public JSONValue {
+public:
+  bool value;
+  void print() const { cout << (value ? "true" : "false"); }
+};
+
+class JSONArray : public JSONValue {
+public:
+  vector<shared_ptr<JSONString>> values;
+  void print() const {
+    cout << "[";
+    for (size_t i = 0; i < values.size(); i++) {
+      values[i]->print();
+      if (i < values.size() - 1) {
+        cout << ",";
+      }
+      cout << "]";
+    }
+  }
+};
 
 enum TokenType {
   OBJECT_BEGIN = '{',
@@ -16,10 +62,9 @@ enum TokenType {
   COLON = ':',
   COMMA = ',',
   NULL_VAL,
+  BOOLEAN,
   STRING,
   NUMBER,
-  FALSE,
-  TRUE,
 };
 
 struct Token {
@@ -83,6 +128,24 @@ vector<Token> tokenize(const string &input) {
   }
   return tokens;
 }
+
+class JSONParser {
+public:
+  explicit JSONParser(const string &jsonstring)
+      : tokens(tokenize(jsonstring)), pos(0) {};
+
+private:
+  vector<Token> tokens;
+  size_t pos;
+
+  void skipWhitespace() {
+    while (pos < tokens.size() &&
+           (tokens[pos].type == NULL_VAL ||
+            tokens[pos].type == STRING && tokens[pos].value.empty())) {
+      pos++;
+    }
+  }
+};
 
 int main(int argc, char *argv[]) {
   if (argc < 2) {
