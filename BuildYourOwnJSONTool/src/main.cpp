@@ -10,39 +10,43 @@
 
 using namespace std;
 
-// datatype
+// json datatype
 
 class JSONValue {
 public:
   virtual ~JSONValue() = default;
+  virtual void print() const = 0;
 };
 
 class JSONNull : public JSONValue {
 public:
-  void print() const { cout << "null"; }
+  void print() const override { cout << "null"; }
 };
 
 class JSONString : public JSONValue {
 public:
   string value;
-  void print() const { cout << "\"" << value << "\""; }
+  explicit JSONString(const string &v) : value(v) {}
+  void print() const override { cout << "\"" << value << "\""; }
 };
 
 class JSONNumber : public JSONValue {
 public:
   double value;
-  void print() const { cout << value; }
+  explicit JSONNumber(double v) : value(v) {}
+  void print() const override { cout << value; }
 };
 
 class JSONBoolean : public JSONValue {
 public:
   bool value;
-  void print() const { cout << (value ? "true" : "false"); }
+  explicit JSONBoolean(bool v) : value(v) {}
+  void print() const override { cout << (value ? "true" : "false"); }
 };
 
 class JSONArray : public JSONValue {
 public:
-  vector<shared_ptr<JSONString>> values;
+  vector<shared_ptr<JSONValue>> values;
   void print() const {
     cout << "[";
     for (size_t i = 0; i < values.size(); i++) {
@@ -50,10 +54,30 @@ public:
       if (i < values.size() - 1) {
         cout << ",";
       }
-      cout << "]";
     }
+    cout << "]";
   }
 };
+
+class JSONObject : public JSONValue {
+public:
+  unordered_map<string, shared_ptr<JSONValue>> values;
+  void print() const {
+    cout << "{";
+    size_t i = 0;
+    for (const auto &pair : values) {
+      cout << "\"" << pair.first << "\":";
+      pair.second->print();
+      if (i < values.size() - 1) {
+        cout << ", ";
+        ++i;
+      }
+    }
+    cout << "}";
+  }
+};
+
+// Lexical Analysis
 
 enum TokenType {
   OBJECT_BEGIN = '{',
@@ -82,7 +106,7 @@ struct Token {
   }
 };
 
-vector<Token> tokenize(const string &input) {
+vector<Token> tokenizer(const string &input) {
   vector<Token> tokens;
   size_t pos = 0;
 
@@ -133,11 +157,13 @@ vector<Token> tokenize(const string &input) {
 class JSONParser {
 public:
   explicit JSONParser(const string &jsonstring)
-      : tokens(tokenize(jsonstring)), pos(0) {};
+      : tokens(tokenizer(jsonstring)), pos(0) {};
 
-  JSONValue parser() {
-    skipWhitespace();
-    return {};
+  shared_ptr<JSONValue> parser() {
+    if (pos >= tokens.size()) {
+      throw runtime_error("Empty Input");
+    }
+    return parseValue();
   }
 
 private:
@@ -149,6 +175,89 @@ private:
            (tokens[pos].type == NULL_VAL ||
             (tokens[pos].type == STRING && tokens[pos].value.empty()))) {
       pos++;
+    }
+  }
+
+  bool hasMore() { return pos < tokens.size(); }
+
+  Token &nextToken() {
+    if (!hasMore()) {
+      throw runtime_error("Unexpected end of input");
+    }
+    return tokens[pos++];
+  }
+
+  Token &currentToken() {
+    if (!hasMore()) {
+      throw runtime_error("Unexpected end of input");
+    }
+    return tokens[pos];
+  }
+
+  shared_ptr<JSONObject> parseObject() {
+    auto object = make_shared<JSONObject>();
+    nextToken();
+    while (hasMore() && currentToken().type != TokenType::OBJECT_END) {
+      if (currentToken().type != TokenType::STRING) {
+        throw runtime_error("Expected string key in object.");
+      }
+      string key = nextToken().value; // check later
+
+      if (currentToken().type != TokenType::COLON) {
+        throw runtime_error("Expected ':' after object key");
+      }
+      nextToken();
+
+      object->values[key] = parseValue();
+
+      if (currentToken().type == TokenType::COMMA) {
+        nextToken();
+      }
+    }
+    return object;
+  }
+
+  shared_ptr<JSONArray> parseArray() {
+    auto array = make_shared<JSONArray>();
+    nextToken();
+    while (hasMore() && currentToken().type != TokenType::ARRAY_END) {
+      array->values.emplace_back(parseValue());
+      if (currentToken().type == TokenType::COMMA) {
+        nextToken();
+      }
+    }
+    if (!hasMore() || currentToken().type != TokenType::ARRAY_END) {
+      throw runtime_error("Expected ']' at end of array");
+    }
+    nextToken();
+    return array;
+  }
+
+  shared_ptr<JSONValue> parseValue() {
+    auto token = currentToken();
+    switch (token.type) {
+    case TokenType::OBJECT_BEGIN:
+      return parseObject();
+    case TokenType::ARRAY_BEGIN:
+      return parseArray();
+    case TokenType::NULL_VAL:
+      nextToken();
+      return make_shared<JSONNull>();
+    case TokenType::STRING:
+      nextToken();
+      return make_shared<JSONString>(token.value);
+    case TokenType::BOOLEAN: {
+      nextToken();
+      bool val = (token.value == "true");
+      return make_shared<JSONBoolean>(val);
+    }
+    case TokenType::NUMBER: {
+      nextToken();
+      double num = stod(token.value);
+      return make_shared<JSONNumber>(num);
+    }
+    default:
+      throw runtime_error("Unexpected token: " + token.value);
     }
   }
 };
@@ -170,7 +279,13 @@ int main(int argc, char *argv[]) {
   }
   string filename = argv[argc - 1];
 
-  auto parser = JSONParser(getFileContents(filename));
-  parser.parser();
+  try {
+    JSONParser parser(getFileContents(filename));
+    auto result = parser.parser();
+    result->print();
+  } catch (const runtime_error &e) {
+    cout << "Error parsing JSON: " << e.what() << endl;
+  }
+
   return 0;
 }
