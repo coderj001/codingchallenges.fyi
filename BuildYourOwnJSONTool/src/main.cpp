@@ -106,6 +106,10 @@ struct Token {
   }
 };
 
+/*
+ * Chain of Responsibility (Behavioral)
+ * Process input characters using a sequence of handlers in a loop.
+ * */
 vector<Token> tokenizer(const string &input) {
   vector<Token> tokens;
   size_t pos = 0;
