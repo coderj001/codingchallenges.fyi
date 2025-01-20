@@ -146,6 +146,29 @@ vector<Token> tokenizer(const string &input) {
       tokens.emplace_back(TokenType::STRING, str);
       break;
     }
+    case 't': {
+      tokens.emplace_back(TokenType::BOOLEAN, "true");
+      break;
+    }
+    case 'f': {
+      tokens.emplace_back(TokenType::BOOLEAN, "false");
+      break;
+    }
+    case 'n': {
+      tokens.emplace_back(TokenType::NULL_VAL, "null");
+      break;
+    }
+    case '0' ... '9': {
+      string num;
+      while (pos < input.length() &&
+             (isdigit(input[pos]) || input[pos] == '.')) {
+        num += input[pos];
+        pos++;
+      }
+      pos--;
+      tokens.emplace_back(TokenType::NUMBER, num);
+      break;
+    }
     case ' ':
     case '\t':
       break;
