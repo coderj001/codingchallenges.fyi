@@ -289,6 +289,7 @@ int main(int argc, char *argv[]) {
     result->print();
   } catch (const runtime_error &e) {
     cout << "Error parsing JSON: " << e.what() << endl;
+    return 1;
   }
 
   return 0;
