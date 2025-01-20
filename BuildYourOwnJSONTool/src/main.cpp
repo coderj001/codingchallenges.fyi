@@ -52,7 +52,7 @@ public:
     for (size_t i = 0; i < values.size(); i++) {
       values[i]->print();
       if (i < values.size() - 1) {
-        cout << ",";
+        cout << ", ";
       }
     }
     cout << "]";
@@ -226,7 +226,11 @@ private:
 
   shared_ptr<JSONObject> parseObject() {
     auto object = make_shared<JSONObject>();
+    if (currentToken().type != TokenType::OBJECT_BEGIN) {
+      throw runtime_error("Expected '{' at start of object");
+    }
     nextToken();
+
     while (hasMore() && currentToken().type != TokenType::OBJECT_END) {
       if (currentToken().type != TokenType::STRING) {
         throw runtime_error("Expected string key in object.");
@@ -244,11 +248,19 @@ private:
         nextToken();
       }
     }
+
+    if (currentToken().type != TokenType::OBJECT_END) {
+      throw runtime_error("Expected '}' at end of object");
+    }
+    nextToken();
     return object;
   }
 
   shared_ptr<JSONArray> parseArray() {
     auto array = make_shared<JSONArray>();
+    if (currentToken().type != TokenType::ARRAY_BEGIN) {
+      throw runtime_error("Expected '[' at start of array");
+    }
     nextToken();
     while (hasMore() && currentToken().type != TokenType::ARRAY_END) {
       array->values.emplace_back(parseValue());
@@ -256,6 +268,7 @@ private:
         nextToken();
       }
     }
+
     if (!hasMore() || currentToken().type != TokenType::ARRAY_END) {
       throw runtime_error("Expected ']' at end of array");
     }
@@ -317,6 +330,13 @@ int main(int argc, char *argv[]) {
     cout << "Error parsing JSON: " << e.what() << endl;
     return 1;
   }
+
+  // vector<Token> tokens = tokenizer(
+  //     R"({"name": "John", "age": 30, "isStudent": false, "courses": ["Math",
+  //     "Science"]})");
+  // for (auto token : tokens) {
+  //   cout << token.getString() << endl;
+  // }
 
   return 0;
 }
