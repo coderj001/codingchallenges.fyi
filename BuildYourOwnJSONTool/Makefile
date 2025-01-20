@@ -1,5 +1,7 @@
 CXX = g++
 CXXFLAGS = -Wall -Iinclude
+# Debugger flag
+# CXXFLAGS = -g -Wall -Iinclude
 
 SRC_DIR = src
 OBJ_DIR = obj

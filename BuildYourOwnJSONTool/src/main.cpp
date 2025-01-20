@@ -10,7 +10,7 @@
 
 using namespace std;
 
-// json datatype
+// Datatype
 
 class JSONValue {
 public:
@@ -158,6 +158,9 @@ vector<Token> tokenizer(const string &input) {
   return tokens;
 }
 
+/** Builder Pattern -
+ * Construct complex JSON structures step by step during parsing.
+ **/
 class JSONParser {
 public:
   explicit JSONParser(const string &jsonstring)
