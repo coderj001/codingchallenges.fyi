@@ -7,7 +7,7 @@
          "request": "launch",
          "program": "${workspaceFolder}/bin/parser",
          "args": [
-            "../test_files/step2/invalid.json"
+            "../test_files/step3/valid.json"
          ],
          "stopAtEntry": false,
          "cwd": "${workspaceFolder}/src",
