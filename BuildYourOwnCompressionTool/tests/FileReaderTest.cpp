@@ -2,13 +2,7 @@
 
 #include "../include/FileReader.h"
 
-class FileReaderTest : public ::testing::Test {
-protected:
-  void SetUp() override {}
-  void TearDown() override {}
-};
-
-TEST_F(FileReaderTest, GetFrequenciesTest) {
+TEST(FileReaderTest, getFrequencies) {
 
   string input_filepath = "test.txt";
 
