@@ -59,12 +59,13 @@ int main(int argc, char *argv[]) {
       vector<string> tokens = split(line, delimiter);
       for (size_t i = 0; i < fields.size(); ++i) {
         if (fields[i] <= tokens.size()) {
-          cout << tokens[fields[i] - 1] << endl;
+          cout << tokens[fields[i] - 1] << "\b";
         }
         if (i < fields.size() - 1) {
           cout << delimiter;
         }
       }
+      cout << endl;
     }
 
     infile.close();
