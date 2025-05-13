@@ -4,7 +4,4 @@
 
 #include "../include/cut.h"
 
-void sample_input(string in){
-    cout << in << endl;
-}
 
