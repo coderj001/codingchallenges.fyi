@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  vector<int> feilds;
+  vector<size_t> fields;
   vector<string> files;
   char delimiter = '\t';
 
@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
       istringstream iss(feildList);
       int feild;
       while (iss >> feild) {
-        feilds.push_back(feild);
+        fields.push_back(feild);
         if (iss.peek() == ',') {
           iss.ignore();
         }
@@ -44,30 +44,30 @@ int main(int argc, char *argv[]) {
     } else {
       files.push_back(arg);
     }
+  }
 
-    // Process each files
-    for (const auto &file : files) {
-      ifstream infile(file);
-      if (!infile.is_open()) {
-        cerr << "Error: Could not open file " << file << endl;
-        continue;
-      }
+  // Process each files
+  for (const auto &file : files) {
+    ifstream infile(file);
+    if (!infile.is_open()) {
+      cerr << "Error: Could not open file " << file << endl;
+      continue;
+    }
 
-      string line;
-      while (getline(infile, line)) {
-        vector<string> tokens = split(line, delimiter);
-        for (size_t i = 0; i < feilds.size(); ++i) {
-          if (feilds[i] <= tokens.size()) {
-            cout << tokens[feilds[i]] << endl;
-          }
-          if (i < feilds.size() - 1) {
-            cout << delimiter;
-          }
+    string line;
+    while (getline(infile, line)) {
+      vector<string> tokens = split(line, delimiter);
+      for (size_t i = 0; i < fields.size(); ++i) {
+        if (fields[i] <= tokens.size()) {
+          cout << tokens[fields[i] - 1] << endl;
+        }
+        if (i < fields.size() - 1) {
+          cout << delimiter;
         }
       }
-
-      infile.close();
     }
+
+    infile.close();
   }
 
   return 0;
