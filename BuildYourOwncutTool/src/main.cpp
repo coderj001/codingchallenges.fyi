@@ -5,17 +5,9 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+#include "../include/cut.h"
 
-vector<string> split(const string &s, char delimiter) {
-  vector<string> tokens;
-  string token;
-  istringstream tokenStream(s);
-  while (getline(tokenStream, token, delimiter)) {
-    tokens.push_back(token);
-  }
-  return tokens;
-}
+using namespace std;
 
 int main(int argc, char *argv[]) {
   if (argc < 3) {
@@ -46,29 +38,19 @@ int main(int argc, char *argv[]) {
     }
   }
 
-  // Process each files
-  for (const auto &file : files) {
-    ifstream infile(file);
-    if (!infile.is_open()) {
-      cerr << "Error: Could not open file " << file << endl;
-      continue;
-    }
-
-    string line;
-    while (getline(infile, line)) {
-      vector<string> tokens = split(line, delimiter);
-      for (size_t i = 0; i < fields.size(); ++i) {
-        if (fields[i] <= tokens.size()) {
-          cout << tokens[fields[i] - 1] << "\b";
-        }
-        if (i < fields.size() - 1) {
-          cout << delimiter;
-        }
+  if (files.empty()) {
+    processStream(cin, fields, delimiter);
+  } else {
+    for (const auto &file : files) {
+      ifstream infile(file);
+      if (!infile.is_open()) {
+        cerr << "Error: Could not open file " << file << endl;
+        continue;
       }
-      cout << endl;
-    }
+      processStream(infile, fields, delimiter, file);
 
-    infile.close();
+      infile.close();
+    }
   }
 
   return 0;
