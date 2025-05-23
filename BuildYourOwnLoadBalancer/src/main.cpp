@@ -1,7 +1,7 @@
-
 #include <asm-generic/socket.h>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <iostream>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -45,6 +45,21 @@ int main() {
   }
 
   cout << "Server listening on port " << PORT << endl;
+
+  if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
+                           (socklen_t *)&addrlen)) < 0) {
+    perror("accept");
+    exit(EXIT_FAILURE);
+  }
+
+  read(new_socket, buffer, 1024);
+  cout << "Message from client: " << buffer << endl;
+
+  send(new_socket, helloMsg, strlen(helloMsg), 0);
+  cout << "Hello Message Send" << endl;
+
+  close(new_socket);
+  close(server_fd);
 
   return 0;
 }
